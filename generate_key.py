@@ -1,7 +1,7 @@
-import os
-import ecdsa
 import hashlib
 import base58
+from private_key import PrivateKey
+from public_key import PublicKey
 
 
 # Network Codes
@@ -12,21 +12,18 @@ NAMECOIN_NETWORK = '\34'
 ############################### Creating the Public and Private keys ####################################
 
 # Generating your private key.
-private_key = os.urandom(32).encode("hex")
+priv_k = PrivateKey()
+private_key = priv_k.generate_key()
 
-# This is your private signature.
-signed_key = ecdsa.SigningKey.from_string(private_key.decode("hex"), curve = ecdsa.SECP256k1)
-
-# This is a public verification key.
-verification_key = signed_key.verifying_key
-
-# Generating your public key based on your verification key.
-public_key = ('\04' + verification_key.to_string()).encode("hex")
+# Generating your public key from the private key.
+pub_k = PublicKey(private_key)
+public_key = pub_k.generate_key()
 
 #########################################################################################################
 
 ################################## Creating the Bitcoin Address #########################################
 
+# Create an instance of the ripemd160 class
 ripemd160 = hashlib.new('ripemd160')
 
 # Do a ripemd160 hash of a SHA256 hash of your public key.
