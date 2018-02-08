@@ -10,7 +10,6 @@ NAMECOIN_NETWORK = '\34'
 ############################### Creating the Public and Private keys ####################################
 
 # Generating your private key
-
 private_key = os.urandom(32).encode("hex")
 
 # This is your private signature
