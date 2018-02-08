@@ -1,7 +1,7 @@
 import hashlib
 import base58
-from private_key import PrivateKey
-from public_key import PublicKey
+from key.private_key import PrivateKey
+from key.public_key import PublicKey
 
 
 # Network Codes
@@ -13,7 +13,8 @@ NAMECOIN_NETWORK = '\34'
 
 # Generating your private key.
 priv_k = PrivateKey()
-private_key = priv_k.generate_key()
+priv_k.set_random_key()
+private_key = priv_k.private_key
 
 # Generating your public key from the private key.
 pub_k = PublicKey(private_key)

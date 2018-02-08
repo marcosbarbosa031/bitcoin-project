@@ -1,6 +1,6 @@
 import socket
-from conn_message import ConnMessage
-from conn_header import ConnHeader
+from conn.conn_header import ConnHeader
+from conn.conn_message import ConnMessage
 
 ###################################### Creating the message ######################################
 
