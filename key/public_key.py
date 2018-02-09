@@ -6,7 +6,7 @@ class PublicKey(object):
     
     def generate_key(self):
         # This is your private signature.
-        signed_key = ecdsa.SigningKey.from_string(self.private_key.decode("hex"), curve=ecdsa.SECP256k1)
+        signed_key = ecdsa.SigningKey.from_string(self.private_key.decode("hex"), curve = ecdsa.SECP256k1)
 
         # This is a public verification key.
         verification_key = signed_key.verifying_key
