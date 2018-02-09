@@ -14,6 +14,7 @@ NAMECOIN_NETWORK = '\34'
 
 # Generating your private key.
 priv_k = PrivateKey()
+#NOTE: You can set your own private key by replacing the line above with set_key("your pk")
 priv_k.set_random_key()
 private_key = priv_k.private_key
 
@@ -37,7 +38,7 @@ middle_man = MAIN_NETWORK + ripemd160.digest()
 # Make the checksum by double SHA256 hashing the previous data.
 checksum = hashlib.sha256(hashlib.sha256(middle_man).digest()).digest()[:4]
 
-# Convert base256 to base58 the data plus it checksum to geneate your bitcoin address.
+# Convert base256 to base58 the data plus it checksum to generate your bitcoin address.
 bitcoin_addr = base58.b58encode(middle_man + checksum)
 
 #########################################################################################################
