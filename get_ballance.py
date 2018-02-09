@@ -1,10 +1,12 @@
 import sys
 import urllib2
 
+api = "https://blockchain.info/pt/q/addressbalance/"
+
 if (len(sys.argv) <= 2):
     if (len(sys.argv[1]) == 34 or len(sys.argv[1]) == 33):
         address = sys.argv[1]
-        req = urllib2.Request("https://blockchain.info/pt/q/addressbalance/" + address)
+        req = urllib2.Request(api + address)
         try:
             response = urllib2.urlopen(req)
             ballance = float(response.read())/100000000
