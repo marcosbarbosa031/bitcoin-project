@@ -4,7 +4,7 @@ from conn.conn_message import ConnMessage
 
 ###################################### Creating the message ######################################
 
-# for more details: See conn_message.py 
+# For more details: See conn_message.py 
 msg = ConnMessage(70015, 0, 0, "127.0.0.1", 8333, 0, "127.0.0.1", 8333, 0, 508198, False)
 payload = msg.create_message()
 
@@ -12,7 +12,7 @@ payload = msg.create_message()
 
 ###################################### Header of the message #####################################
 
-# for more details: See conn_header.py
+# For more details: See conn_header.py
 header = ConnHeader()
 message = header.create_header(payload)
 
