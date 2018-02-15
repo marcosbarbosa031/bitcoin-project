@@ -7,11 +7,11 @@ class ConnHeader(object):
         self.magic = "F9BEB4D9".decode("hex")
 
         # "\00" = NULL
-        self.command = "version" + 5 * "\00"
+        self.command = "tx" + 10 * "\00"
     
     def create_header(self, payload):
-        length = struct.pack("L", len(payload))
-        checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
+        self.length = struct.pack("L", len(payload))
+        self.checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[:4]
 
-        return self.magic + self.command + length + checksum + payload
+        return self.magic + self.command + self.length + self.checksum + payload
     pass
