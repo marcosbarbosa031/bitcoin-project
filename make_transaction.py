@@ -2,6 +2,7 @@ import struct
 import base58
 import hashlib
 from key.public_key import PublicKey
+from connection import Connection
 
 prev_txid           = "84d813beb51c3a12cb5d0bb18c6c15062453d476de24cb2f943ca6e20115d85c"
 
@@ -38,41 +39,27 @@ class rawTransaction(object):
 
     def __init__(self, tx_in_count, tx_out_count, tx_in, tx_out1, tx_out2):
         self.tx_in_count    = struct.pack("<B", tx_in_count)
-        self.tx_in          = {
-            'txouthash'             : tx_in.txouthash,
-            'tx_out_index'          : tx_in.tx_out_index,
-            'tx_in_script'          : tx_in.tx_in_script,
-            'tx_in_script_bytes'    : tx_in.tx_in_script_bytes,
-            'tx_in_sequence'        : tx_in.tx_in_sequence
-        }
+        self.tx_in          = tx_in
         self.tx_out_count   = struct.pack("<B", tx_out_count)
-        self.tx_out1        = {
-            'tx_out_value'          : tx_out1.tx_out_value,
-            'tx_out_pk_script'      : tx_out1.tx_out_pk_script,
-            'tx_out_pk_script_bytes': tx_out1.tx_out_pk_script_bytes
-        } #TEMP
-        self.tx_out2        = {
-            'tx_out_value'          : tx_out2.tx_out_value,
-            'tx_out_pk_script'      : tx_out2.tx_out_pk_script,
-            'tx_out_pk_script_bytes': tx_out2.tx_out_pk_script_bytes
-        } #TEMP
+        self.tx_out1        = tx_out1
+        self.tx_out2        = tx_out2
     
     def make_transaction(self, sender_private_key):
         rtx_string = (
             self.version + 
             self.tx_in_count + 
-            self.tx_in['txouthash'] + 
-            self.tx_in['tx_out_index'] + 
-            self.tx_in['tx_in_script_bytes'] + 
-            self.tx_in['tx_in_script'] + 
-            self.tx_in['tx_in_sequence'] + 
+            self.tx_in.txouthash + 
+            self.tx_in.tx_out_index + 
+            self.tx_in.tx_in_script_bytes + 
+            self.tx_in.tx_in_script + 
+            self.tx_in.tx_in_sequence + 
             self.tx_out_count + 
-            self.tx_out1['tx_out_value'] + 
-            self.tx_out1['tx_out_pk_script_bytes'] + 
-            self.tx_out1['tx_out_pk_script'] + 
-            self.tx_out2['tx_out_value'] +
-            self.tx_out2['tx_out_pk_script_bytes'] +
-            self.tx_out2['tx_out_pk_script'] + 
+            self.tx_out1.tx_out_value + 
+            self.tx_out1.tx_out_pk_script_bytes + 
+            self.tx_out1.tx_out_pk_script + 
+            self.tx_out2.tx_out_value +
+            self.tx_out2.tx_out_pk_script_bytes +
+            self.tx_out2.tx_out_pk_script + 
             self.lock_time + 
             struct.pack("<L", 1)
         )
@@ -92,19 +79,19 @@ class rawTransaction(object):
         real_tx = (
             self.version +
             self.tx_in_count +
-            self.tx_in['txouthash'] +
-            self.tx_in['tx_out_index'] +
+            self.tx_in.txouthash +
+            self.tx_in.tx_out_index +
             struct.pack("<B", len(sigscript) + 1) +
             struct.pack("<B", len(signature) + 1) +
             sigscript + 
-            self.tx_in['tx_in_sequence'] +
+            self.tx_in.tx_in_sequence +
             self.tx_out_count +
-            self.tx_out1['tx_out_value'] +
-            self.tx_out1['tx_out_pk_script_bytes'] +
-            self.tx_out1['tx_out_pk_script'] +
-            self.tx_out2['tx_out_value'] +
-            self.tx_out2['tx_out_pk_script_bytes'] +
-            self.tx_out2['tx_out_pk_script'] +
+            self.tx_out1.tx_out_value +
+            self.tx_out1.tx_out_pk_script_bytes +
+            self.tx_out1.tx_out_pk_script +
+            self.tx_out2.tx_out_value +
+            self.tx_out2.tx_out_pk_script_bytes +
+            self.tx_out2.tx_out_pk_script +
             self.lock_time
         )
         return real_tx
@@ -122,5 +109,55 @@ txout2  = transactionOut(0.0005, sender_hashed_pk)
 
 rtx = rawTransaction(1, 2, txin, txout1, txout2)
 
-# print rtx.tx_in['tx_in_script'].encode("hex")
-print rtx.make_transaction(sender_private_key).encode("hex")
+# rtx_message = rtx.make_transaction(sender_private_key).encode("hex")
+rtx_message = "01000000015cd81501e2a63c942fcb24de76d4532406156c8cb10b5dcb123a1cb5be13d884000000008a473044022050ac959cd6b584c7340e764491925da8570599936843b75053f964fea0c26b7302203b49d64de9d2625c48ceea72178e158d44d0273d7b7774e31145358a32d8400501410437078f8c4a54b67cd1724a3535cb1918bca186c7a143459c9aac35113d4a958b0d4eea6b320fa82c17147b72e0fe11c08b0054897ffb7bdb194f259b0db9e129ffffffff02a0860100000000001976a914478075922af41fb441aa0ab67e91aef27ef1e68688ac50c30000000000001976a914ec06b2bf18c89706855f761d215f21f3315b399488ac00000000"
+
+# Preparing connection
+
+conn = Connection()
+conn.createMessage(rtx_message)
+conn.sendMessage()
+
+# print (rtx.make_transaction(sender_private_key).encode("hex"))
+# print rtx.tx_in.tx_in_script_bytes.encode("hex")
+
+
+# 01000000                                                          - Version
+# 01                                                                - No.Inputs
+# 5cd81501e2a63c942fcb24de76d4532406156c8cb10b5dcb123a1cb5be13d884  - OUT ID
+# 00000000                                                          - OUT indez number
+# 8c49                                                              - sigscript size
+# 3046022100954eb564a3f0e45dc2203681a5d058d3378933b7586a5a9d95dfeb
+# a73949e306022100a9ecc813ae95f27020962b6b230f6221d6dd7c97cd840685
+# cdf05763fdf9ee1501410437078f8c4a54b67cd1724a3535cb1918bca186c7a1
+# 43459c9aac35113d4a958b0d4eea6b320fa82c17147b72e0fe11c08b0054897f
+# fb7bdb194f259b0db9e129                                            - Sigscript
+# ffffffff                                                          - Sequence
+# 02                                                                - No.Outputs
+# ------------------------ Output 1 ------------------------------
+# a086010000000000                                                  - Satoshi
+# 19                                                                - Bytes in publickey
+# 76                                                                - OP_DUP
+# a9                                                                - OP_HASH160
+# 14                                                                - Push 20 bytes as data
+# 478075922af41fb441aa0ab67e91aef27ef1e686                          - Publickey Hash
+# 88                                                                - OP_EQUALVERIFY
+# ac                                                                - OP_CHECKSIG
+# ------------------------ Output 2 ------------------------------
+# 50c3000000000000                                                  - Satoshi                        
+# 19                                                                - Bytes in publickey
+# 76                                                                - OP_DUP
+# a9                                                                - OP_HASH160
+# 14                                                                - Push 20 bytes as data
+# ec06b2bf18c89706855f761d215f21f3315b3994                          - Publickey Hash
+# 88                                                                - OP_EQUALVERIFY
+# ac                                                                - OP_CHECKSIG
+# 00000000                                                          - locktime
+
+
+# 01000000
+# 01
+# 5cd81501e2a63c942fcb24de76d4532406156c8cb10b5dcb123a1cb5be13d884
+# 00000000
+# 8b48
+# 3045022012ae609c5a7f11cc3d061e9f996ab54de856eefd945965d4fd26d6ad6fa9ea59022100b080fbd3e3b27d9604d8743367e5ce996063b00c6676145f7c03a6d5ab89af2c01410437078f8c4a54b67cd1724a3535cb1918bca186c7a143459c9aac35113d4a958b0d4eea6b320fa82c17147b72e0fe11c08b0054897ffb7bdb194f259b0db9e129ffffffff02a0860100000000001976a914478075922af41fb441aa0ab67e91aef27ef1e68688ac50c30000000000001976a914ec06b2bf18c89706855f761d215f21f3315b399488ac00000000
